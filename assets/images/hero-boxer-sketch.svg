@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <radialGradient id="punchGlow" cx="72%" cy="58%" r="45%">
+      <stop offset="0%" stop-color="#0abab5" stop-opacity="0.25"/>
+      <stop offset="60%" stop-color="#14181f" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#0c0d10" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1000" height="640" fill="transparent"/>
+  <circle cx="720" cy="380" r="320" fill="url(#punchGlow)"/>
+
+  <!-- Dramatic crosshatch arcs & shadow plane -->
+  <g stroke="#7a8494" stroke-width="1.2" opacity="0.3" fill="none">
+    <ellipse cx="620" cy="520" rx="360" ry="80"/>
+    <ellipse cx="620" cy="540" rx="280" ry="60" stroke-dasharray="8 6"/>
+    <path d="M 120,480 Q 400,560 850,530"/>
+  </g>
+
+  <!-- Kinetic speed arcs -->
+  <g stroke="#cbd5e1" stroke-width="1.5" opacity="0.45" fill="none" stroke-linecap="round">
+    <path d="M 440,240 C 560,260 740,310 880,360" stroke-width="2.2"/>
+    <path d="M 400,290 C 540,320 720,380 910,430" stroke-width="3"/>
+    <path d="M 430,340 C 560,370 700,430 860,500" stroke-width="2"/>
+    <path d="M 520,200 C 640,230 780,270 890,320" stroke-dasharray="10 6"/>
+    <path d="M 480,420 C 600,460 740,510 870,550" stroke-dasharray="12 6"/>
+  </g>
+
+  <!-- Dramatic Boxer Body & Guard (Dark athletic charcoal silhouette with highlights) -->
+  <!-- Left shoulder, back muscular plane -->
+  <path d="M 220,360 C 260,340 310,345 340,370 C 370,395 380,440 360,520 C 320,550 250,560 210,510 C 190,470 190,400 220,360 Z" 
+        fill="#181b22" stroke="#333a46" stroke-width="2"/>
+  
+  <!-- Left Arm (Rear guard tight against chin) -->
+  <path d="M 240,240 C 260,210 290,200 315,215 C 335,235 340,270 330,310 C 315,350 280,370 250,340 C 230,315 225,270 240,240 Z" 
+        fill="#15171d" stroke="#3e4654" stroke-width="2"/>
+  <!-- Guarding Glove (Left hand protecting jaw) -->
+  <path d="M 285,185 C 315,175 345,190 355,220 C 360,245 345,268 320,272 C 295,275 275,255 275,230 C 275,205 280,190 285,185 Z" 
+        fill="#111317" stroke="#94a3b8" stroke-width="2"/>
+  <path d="M 295,195 C 320,188 340,200 348,222" fill="none" stroke="#0abab5" stroke-width="2"/>
+
+  <!-- Muscular Neck & Chin -->
+  <path d="M 275,220 C 290,240 298,270 295,295 C 270,290 250,275 240,250 Z" fill="#1c1f26" stroke="#2e3541" stroke-width="1.5"/>
+
+  <!-- Head Base, Jawline, Cheekbone -->
+  <path d="M 240,115 C 275,108 315,120 330,150 C 342,175 338,212 315,236 C 290,255 260,250 242,230 C 225,210 220,170 228,140 C 232,122 238,116 240,115 Z" 
+        fill="#181b22" stroke="#475569" stroke-width="2"/>
+
+  <!-- Athletic Slicked Back Hair -->
+  <path d="M 225,135 C 218,100 240,68 275,62 C 310,58 340,72 350,102 C 355,122 350,142 335,152 C 325,128 305,112 275,112 C 250,112 235,122 225,135 Z" 
+        fill="#0c0d10" stroke="#334155" stroke-width="2"/>
+  <g stroke="#94a3b8" stroke-width="1.2" fill="none" opacity="0.8">
+    <path d="M 245,85 C 270,80 300,85 320,100"/>
+    <path d="M 260,75 C 285,72 315,80 335,95"/>
+    <path d="M 240,100 C 260,95 290,100 310,112"/>
+    <path d="M 280,68 C 300,72 325,85 340,110"/>
+  </g>
+
+  <!-- Focused Boxing Eyes & Intense Brow -->
+  <path d="M 265,148 Q 282,143 296,148" stroke="#f8fafc" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M 306,150 Q 320,147 330,154" stroke="#f8fafc" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+  <ellipse cx="282" cy="155" rx="5" ry="3.2" fill="#f8fafc"/>
+  <circle cx="284" cy="155" r="2.2" fill="#0c0d10"/>
+  <ellipse cx="316" cy="157" rx="4.5" ry="3" fill="#f8fafc"/>
+  <circle cx="317" cy="157" r="2" fill="#0c0d10"/>
+  <path d="M 296,148 L 294,175 L 302,178" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Trimmed Groomed Beard & Mustache (Mori's signature look) -->
+  <path d="M 260,188 C 270,185 290,185 302,188 C 304,195 298,202 286,202 C 274,202 264,195 260,188 Z" fill="#0c0d10"/>
+  <path d="M 240,170 C 240,205 255,240 284,245 C 304,245 322,225 328,195 C 324,210 310,232 286,232 C 262,232 248,210 245,185 Z" 
+        fill="#0c0d10" stroke="#334155" stroke-width="1.5"/>
+
+  <!-- Right Arm Delivering the Colossal Lead Cross (Perspective Foreshortening) -->
+  <!-- Right Shoulder / Deltoid -->
+  <path d="M 315,310 C 350,290 400,280 460,290 C 510,300 550,330 550,370 C 520,410 450,420 390,400 C 340,380 320,340 315,310 Z" 
+        fill="#1e222a" stroke="#3b4352" stroke-width="2.5"/>
+  <path d="M 380,315 C 430,305 480,315 510,345" fill="none" stroke="#0abab5" stroke-width="1.8" opacity="0.6"/>
+
+  <!-- Forearm Extending Directly Outward with Wraps -->
+  <path d="M 480,310 C 540,300 620,310 700,335 C 730,345 745,395 710,435 C 650,470 570,475 500,430 C 470,400 460,350 480,310 Z" 
+        fill="#16181f" stroke="#2d3340" stroke-width="3"/>
+
+  <!-- Athletic Wraps at Wrist -->
+  <g stroke="#f1f5f9" stroke-width="2.5" fill="none">
+    <path d="M 600,320 C 625,315 655,325 675,348"/>
+    <path d="M 585,342 C 610,335 640,348 662,370"/>
+    <path d="M 570,365 C 595,358 628,370 650,392"/>
+    <path d="M 555,390 C 580,382 612,395 635,418"/>
+  </g>
+
+  <!-- Massive Boxing Glove in Foreground (Dominant Focal Point) -->
+  <!-- Glove Main Shape -->
+  <path d="M 670,280 C 750,230 870,240 940,290 C 990,335 1010,410 970,480 C 930,550 830,580 750,560 C 680,540 640,470 650,400 C 655,350 660,305 670,280 Z" 
+        fill="#0f1115" stroke="#f8fafc" stroke-width="4"/>
+
+  <!-- Glove Padding Form Highlights -->
+  <path d="M 720,310 C 790,265 880,275 930,315 C 970,345 985,405 960,455 C 935,505 860,535 790,525" 
+        fill="none" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
+  <!-- Vibrant Accent Stroke on Glove Apex -->
+  <path d="M 760,335 C 830,295 910,310 945,345" fill="none" stroke="#0abab5" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M 780,360 C 850,325 920,340 940,375" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- Thumb Contour & Seams -->
+  <path d="M 690,400 C 720,445 770,490 825,490 C 860,490 870,460 840,430 C 805,395 750,380 690,400 Z" 
+        fill="#1c2027" stroke="#cbd5e1" stroke-width="2.5"/>
+  <line x1="780" y1="340" x2="900" y2="460" stroke="#0abab5" stroke-width="2" stroke-dasharray="8 6"/>
+  <line x1="730" y1="390" x2="850" y2="500" stroke="#64748b" stroke-width="2"/>
+
+  <!-- Speed bursts and kinetic impact sparks -->
+  <g stroke="#ffffff" stroke-width="2.5" stroke-linecap="round">
+    <line x1="940" y1="280" x2="995" y2="250"/>
+    <line x1="975" y1="340" x2="1030" y2="330"/>
+    <line x1="985" y1="410" x2="1040" y2="420"/>
+    <line x1="960" y1="480" x2="1015" y2="510"/>
+    <line x1="900" y1="550" x2="955" y2="595"/>
+  </g>
+</svg>

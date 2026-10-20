@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="calGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c0d10" stop-opacity="0.85"/>
+      <stop offset="70%" stop-color="#1e293b" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0abab5" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Large flourishing Persian / Arabic calligraphic art composition -->
+  <!-- Backing subtle ornamental arcs -->
+  <g stroke="#e2e8f0" stroke-width="1.5" fill="none" opacity="0.6">
+    <circle cx="280" cy="350" r="220" stroke-dasharray="16 10"/>
+    <circle cx="280" cy="350" r="160" stroke-dasharray="8 8"/>
+    <path d="M 80,180 Q 280,80 480,180" stroke-width="2"/>
+    <path d="M 80,520 Q 280,620 480,520" stroke-width="2"/>
+  </g>
+
+  <!-- Major Calligraphic Strokes (Siyah Mashq / Nastaliq Flowing Letterforms) -->
+  <g fill="url(#calGrad)" stroke="#0c0d10" stroke-width="1.5">
+    <!-- Sweeping Alef & Lam vertical strokes -->
+    <path d="M 220,90 C 235,90 245,150 240,280 C 235,410 215,530 140,580 C 120,595 105,580 120,560 C 160,510 185,410 190,280 C 195,150 205,90 220,90 Z"/>
+    <path d="M 280,70 C 295,70 305,130 300,260 C 295,390 280,510 210,590 C 190,610 175,600 190,575 C 230,510 250,390 255,260 C 260,130 265,70 280,70 Z"/>
+
+    <!-- Grand horizontal sweeping strokes (Kashida) -->
+    <path d="M 80,310 C 160,290 280,270 420,295 C 490,310 540,345 560,380 C 565,395 550,405 530,395 C 490,370 440,340 370,330 C 260,315 150,340 80,370 C 65,375 60,360 68,345 C 72,330 75,315 80,310 Z"/>
+
+    <!-- Persian curved 'Raa' & 'Vav' flourishes -->
+    <path d="M 330,220 C 370,210 420,230 450,270 C 475,310 460,370 410,420 C 350,480 260,520 160,540 C 130,545 125,530 145,520 C 220,495 300,455 350,405 C 390,365 400,325 385,295 C 370,270 340,255 315,260 Z"/>
+
+    <!-- Dynamic loop strokes ('Ain / Ghayn / Haa') -->
+    <path d="M 260,380 C 290,350 340,350 370,385 C 395,415 390,460 350,490 C 310,520 240,530 180,520 C 150,515 160,495 185,498 C 235,502 290,495 320,470 C 345,450 350,420 330,400 C 310,380 280,380 255,400 Z"/>
+
+    <!-- Secondary flourish layers overlapping with cyan accent hints -->
+    <path d="M 360,160 C 410,150 460,170 490,210 C 510,240 500,280 460,310 C 420,335 370,330 330,300 C 300,275 310,235 335,200 C 345,185 352,170 360,160 Z" opacity="0.85"/>
+    <path d="M 170,240 C 210,225 250,230 270,260 C 285,285 275,315 245,330 C 215,345 175,340 150,315 C 130,295 135,265 155,248 Z" opacity="0.75"/>
+  </g>
+
+  <!-- Accent calligraphic dots (Nuqta) - diamond shaped -->
+  <g fill="#0abab5">
+    <polygon points="340,110 360,130 340,150 320,130"/>
+    <polygon points="375,125 395,145 375,165 355,145"/>
+    <polygon points="260,490 280,510 260,530 240,510"/>
+    <polygon points="420,440 440,460 420,480 400,460"/>
+  </g>
+
+  <!-- Delicate ink splatters & calligraphic texture -->
+  <g fill="#0c0d10" opacity="0.6">
+    <circle cx="130" cy="270" r="4"/>
+    <circle cx="115" cy="290" r="2.5"/>
+    <circle cx="480" cy="260" r="3.5"/>
+    <circle cx="515" cy="285" r="2"/>
+    <circle cx="310" cy="570" r="4"/>
+    <circle cx="335" cy="585" r="2.5"/>
+    <circle cx="420" cy="180" r="3"/>
+  </g>
+</svg>

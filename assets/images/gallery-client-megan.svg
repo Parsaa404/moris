@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 620" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="meganBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181b22"/>
+      <stop offset="100%" stop-color="#0c0d10"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="500" height="620" fill="url(#meganBg)"/>
+  <circle cx="250" cy="280" r="220" fill="none" stroke="#0abab5" stroke-width="1.5" opacity="0.3" stroke-dasharray="8 6"/>
+
+  <!-- Athletic Female Client (Megan) in fit strength posture (lean back/shoulder tone) -->
+  <!-- Athletic Bra / Top and Muscular Back & Shoulder Definition -->
+  <path d="M 170,220 C 190,190 220,180 250,180 C 280,180 310,190 330,220 C 350,260 360,330 350,420 C 330,470 290,500 250,500 C 210,500 170,470 150,420 C 140,330 150,260 170,220 Z" 
+        fill="#14171d" stroke="#28303d" stroke-width="2"/>
+
+  <!-- Athletic sports top straps -->
+  <path d="M 210,210 L 250,260 L 290,210" fill="none" stroke="#0abab5" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 180,270 L 320,270" stroke="#0abab5" stroke-width="4"/>
+
+  <!-- Toned Deltoids & Spine Muscle Definition -->
+  <g stroke="#3e4a5c" stroke-width="2" fill="none" opacity="0.8">
+    <path d="M 250,270 L 250,410"/> <!-- Spine -->
+    <path d="M 210,240 C 225,270 235,310 240,350"/> <!-- Left Lat -->
+    <path d="M 290,240 C 275,270 265,310 260,350"/> <!-- Right Lat -->
+  </g>
+
+  <!-- Head turned in confident profile / three-quarter view -->
+  <path d="M 215,140 C 215,95 245,75 275,75 C 305,75 330,95 330,140 C 330,180 305,210 275,210 C 245,210 215,180 215,140 Z" 
+        fill="#232731" stroke="#3b4252" stroke-width="2"/>
+  <!-- Athletic Cap / Visor (As seen in Megan's sketch!) -->
+  <path d="M 220,110 C 240,95 280,95 315,105 L 345,108 C 355,108 355,115 340,118 L 310,120 Z" 
+        fill="#0c0d10" stroke="#475569" stroke-width="1.8"/>
+
+  <!-- Lower artistic quote overlay area -->
+  <rect x="30" y="520" width="440" height="75" rx="10" fill="#181c24" opacity="0.9" stroke="#2e3846" stroke-width="1"/>
+  <text x="50" y="555" fill="#ffffff" font-family="'Albert Sans', sans-serif" font-weight="700" font-size="20">MEGAN</text>
+  <text x="50" y="578" fill="#0abab5" font-family="'Albert Sans', sans-serif" font-weight="500" font-size="13">FAT LOSS &amp; STRENGTH · 12 WEEKS</text>
+</svg>
