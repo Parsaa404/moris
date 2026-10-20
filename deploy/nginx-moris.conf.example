@@ -1,0 +1,39 @@
+# Moris website — Nginx site block (Ubuntu)
+# Copy to: /etc/nginx/sites-available/moris
+# Enable: sudo ln -s /etc/nginx/sites-available/moris /etc/nginx/sites-enabled/
+# Test:   sudo nginx -t && sudo systemctl reload nginx
+#
+# Replace YOUR_DOMAIN with your real domain (e.g. moris.example.com).
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name YOUR_DOMAIN www.YOUR_DOMAIN;
+
+    root /var/www/moris;
+    index index.php;
+
+    client_max_body_size 16M;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        # Ubuntu 22.04 with PHP 8.1: unix:/run/php/php8.1-fpm.sock
+    }
+
+    location ~* ^/(includes|sql|vendor)/ {
+        deny all;
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+
+    location ~* \.(md|sql|env|git)$ {
+        deny all;
+    }
+}

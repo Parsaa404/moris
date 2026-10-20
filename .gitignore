@@ -1,0 +1,21 @@
+# Local config with real database credentials
+includes/config.php
+deploy/ubuntu-env
+
+# User uploads (keep folder + security rules, ignore files)
+assets/images/uploads/*
+!assets/images/uploads/.gitkeep
+!assets/images/uploads/.htaccess
+
+# Rate-limit cache
+includes/cache/ratelimit/*
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log
+*.pem
+
+# Install lock (created after first-time setup)
+includes/.installed

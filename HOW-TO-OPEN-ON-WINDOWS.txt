@@ -1,0 +1,23 @@
+MORIS WEBSITE — OPEN ON WINDOWS PC
+====================================
+
+1) Unzip the whole folder (right-click → Extract All).
+
+2) You should see folders: admin, en, fa, assets, includes, sql, deploy, etc.
+   If the folder looks empty, you got the wrong zip — ask for
+   "Moris-Website-For-Windows.zip" (full project), not the Mac shortcut.
+
+3) To RUN the website on Windows (for testing):
+   - Install XAMPP: https://www.apachefriends.org/
+   - Copy this folder to: C:\xampp\htdocs\moris-website
+   - Start Apache + MySQL in XAMPP Control Panel
+   - Create database moris_db in phpMyAdmin, import sql\schema.sql
+   - Copy includes\config.example.php to includes\config.php and set DB password
+   - Open browser: http://localhost/moris-website/en/
+
+4) To DEPLOY on Ubuntu Linux server:
+   - See deploy\DEPLOYMENT-UBUNTU.md (or DEPLOYMENT-UBUNTU.md in project root)
+
+5) Mac-only files (ignore on Windows):
+   - start-local.command
+   - Start Moris Website.command

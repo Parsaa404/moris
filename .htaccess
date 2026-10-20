@@ -1,0 +1,27 @@
+# Moris — Apache security (cPanel / shared hosting)
+# Place project root as document root, or merge these rules into public_html/.htaccess
+
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    # Enable HSTS only after HTTPS works:
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# Block direct web access to sensitive folders
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^includes/ - [F,L]
+    RewriteRule ^sql/ - [F,L]
+    RewriteRule ^vendor/ - [F,L]
+    RewriteRule (^|/)\.git - [F,L]
+    RewriteRule (^|/)\.env - [F,L]
+    RewriteRule (^|/)DEPLOYMENT\.md$ - [F,L]
+    RewriteRule (^|/)PROJECT\.md$ - [F,L]
+    RewriteRule (^|/)SECURITY\.md$ - [F,L]
+</IfModule>

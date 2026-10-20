@@ -1,0 +1,21 @@
+# Copy to ubuntu-env on the server (or export before running install):
+#   cp deploy/ubuntu-env.example deploy/ubuntu-env
+#   nano deploy/ubuntu-env
+#   sudo bash deploy/ubuntu-install.sh
+#
+# Never commit ubuntu-env (contains secrets).
+
+# Required
+MORIS_DOMAIN=yourdomain.com
+MORIS_DB_PASS=ChangeMe_StrongPassword_123
+
+# Optional (defaults shown)
+MORIS_WEB_ROOT=/var/www/moris
+MORIS_DB_NAME=moris_db
+MORIS_DB_USER=moris_user
+MORIS_DB_HOST=localhost
+MORIS_DB_PORT=3306
+
+# SSL with Let's Encrypt (leave empty to skip HTTPS setup)
+MORIS_CERTBOT_EMAIL=you@yourdomain.com
+MORIS_RUN_SSL=1
