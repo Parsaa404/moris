@@ -81,61 +81,55 @@ require dirname(__DIR__) . '/includes/public_header.php';
 
 <div class="editorial-home">
     <!-- ======================================================================
-         Section B: Large Hero Section
+         Section B: Cinematic Full-Width Hero Section (Reference: EARN IT. - RTL)
          ====================================================================== -->
-    <section class="ed-hero-section" id="hero">
-        <div class="ed-hero-stage">
-            <div class="ed-hero-visual">
-                <img src="<?= e(url('assets/images/hero-mori.jpg')) ?>" 
-                     alt="موریس بوکس و تمرین شخصی" 
-                     class="ed-hero-art"
-                     loading="eager">
-
-                <!-- Overlaid Circular Badge -->
-                <a href="#basics" class="ed-hero-badge" title="دیدن فلسفه تمرین">
-                    <span class="ed-hero-badge-sub">موریس</span>
-                    <span class="ed-hero-badge-title">بازگشت به<br>اصول.</span>
-                </a>
+    <section class="ed-hero-section ed-hero-section--rtl" id="hero">
+        <div class="ed-hero-container">
+            <div class="ed-hero-main-content">
+                <h1 class="ed-hero-headline">به دستش بیار.</h1>
+                <div class="ed-hero-tagline">
+                    <span class="ed-tagline-line">اعتمادبه‌نفست،</span>
+                    <span class="ed-tagline-line">قدرتت،</span>
+                    <span class="ed-tagline-line">مسیرت.</span>
+                </div>
             </div>
-        </div>
 
-        <!-- Hero Bottom Info Strip (3 Supporting Information Badges) -->
-        <div class="ed-hero-strip">
-            <div class="ed-hero-strip-inner">
-                <div class="ed-strip-item">
-                    <div class="ed-strip-icon">
+            <!-- Bottom Information Highlights (3 Items horizontally aligned) -->
+            <div class="ed-hero-highlights">
+                <div class="ed-highlight-item">
+                    <div class="ed-highlight-icon">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
                         </svg>
                     </div>
-                    <div>
-                        <strong>بیش از ۱۳ سال در رینگ</strong>
-                        <span>تجربه مربیگری قهرمانی و تمرینات حرفه‌ای</span>
+                    <div class="ed-highlight-text">
+                        <strong class="ed-highlight-title">بیش از ۱۳ سال در رینگ</strong>
+                        <span class="ed-highlight-desc">تجربه مربیگری قهرمانی و تمرینات حرفه‌ای</span>
                     </div>
                 </div>
 
-                <div class="ed-strip-item">
-                    <div class="ed-strip-icon">
+                <div class="ed-highlight-item">
+                    <div class="ed-highlight-icon">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M6 5v14M18 5v14M2 9h4v6H2zM18 9h4v6h-4zM6 12h12"/>
                         </svg>
                     </div>
-                    <div>
-                        <strong>تمرین شخصی و بوکس</strong>
-                        <span>برنامه‌ریزی قدرتی و بدنسازی اختصاصی ۱-به-۱</span>
+                    <div class="ed-highlight-text">
+                        <strong class="ed-highlight-title">تمرین شخصی و بوکس</strong>
+                        <span class="ed-highlight-desc">برنامه‌ریزی قدرتی و بدنسازی اختصاصی ۱-به-۱</span>
                     </div>
                 </div>
 
-                <div class="ed-strip-item">
-                    <div class="ed-strip-icon">
+                <div class="ed-highlight-item">
+                    <div class="ed-highlight-icon">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/>
                             <circle cx="12" cy="10" r="3"/>
                         </svg>
                     </div>
-                    <div>
-                        <strong>کوالالامپور و آنلاین</strong>
-                        <span>تمرین وزنه، چربی‌سوزی و ارتقای عملکرد ورزشی</span>
+                    <div class="ed-highlight-text">
+                        <strong class="ed-highlight-title">کوالالامپور و آنلاین</strong>
+                        <span class="ed-highlight-desc">تمرین وزنه، چربی‌سوزی و ارتقای عملکرد ورزشی</span>
                     </div>
                 </div>
             </div>
