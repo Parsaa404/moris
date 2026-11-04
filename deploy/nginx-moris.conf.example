@@ -25,7 +25,11 @@ server {
         # Ubuntu 22.04 with PHP 8.1: unix:/run/php/php8.1-fpm.sock
     }
 
-    location ~* ^/(includes|sql|vendor)/ {
+    location ~* ^/(includes|sql|vendor|deploy|scratch|postman)/ {
+        deny all;
+    }
+
+    location ~* ^/assets/images/uploads/.*\.(php|phtml|phar|sh|pl|py|cgi)$ {
         deny all;
     }
 
@@ -33,7 +37,7 @@ server {
         deny all;
     }
 
-    location ~* \.(md|sql|env|git)$ {
+    location ~* \.(md|sql|env|git|sh|bat|command)$ {
         deny all;
     }
 }

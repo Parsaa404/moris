@@ -56,7 +56,11 @@ require __DIR__ . '/_header.php';
                     </td>
                     <td class="muted"><?= e(date('d M Y, H:i', strtotime($p['updated_at']))) ?></td>
                     <td class="ta-right">
-                        <a class="btn btn-ghost" href="<?= e(url('admin/page-edit.php?slug=' . urlencode($p['slug']))) ?>">Edit</a>
+                        <?php if ($p['slug'] === 'home'): ?>
+                            <a class="btn btn-primary btn-inline" style="width: auto; padding: 0.35rem 0.8rem; font-size: 0.85rem;" href="<?= e(url('admin/homepage.php')) ?>">Homepage Builder</a>
+                        <?php else: ?>
+                            <a class="btn btn-ghost" href="<?= e(url('admin/page-edit.php?slug=' . urlencode($p['slug']))) ?>">Edit</a>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>

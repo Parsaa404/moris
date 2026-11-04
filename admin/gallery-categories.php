@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name_fa = trim((string) ($_POST['name_fa'] ?? ''));
         $sort    = (int) ($_POST['sort_order'] ?? 0);
         if ($name_en !== '') {
-            $slug = slugify($name_en);
+            $slug = unique_slug('gallery_categories', slugify($name_en));
             $stmt = db()->prepare(
                 'INSERT INTO gallery_categories (name_en, name_fa, slug, sort_order) VALUES (?,?,?,?)'
             );

@@ -1,15 +1,21 @@
 <?php
 /**
  * English home — Redesigned Editorial Layout based on reference wireframe.
- * Strictly preserves website design system, branding, typography, header, and footer.
+ * Dynamically powered by Admin Panel Homepage Builder while preserving all original texts & layout.
  */
 
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/config.php';
 require_once dirname(__DIR__) . '/includes/functions.php';
+require_once dirname(__DIR__) . '/includes/homepage_cms.php';
 
-public_session();
+if (!empty($_GET['preview'])) {
+    require_once dirname(__DIR__) . '/includes/auth.php';
+    auth_start();
+} else {
+    public_session();
+}
 
 $lang = 'en';
 $dir = 'ltr';
@@ -43,11 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $userGoal = mb_substr(trim((string) ($_POST['goal'] ?? '')), 0, 100);
         $bookDate = mb_substr(trim((string) ($_POST['consultation_date'] ?? '')), 0, 20);
         $bookSlot = mb_substr(trim((string) ($_POST['consultation_slot'] ?? '')), 0, 20);
+        $honeypot = trim((string) ($_POST['website'] ?? ''));
 
         if ($name === '') {
             $bookingError = 'Please enter your name.';
         } elseif (!filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
             $bookingError = 'Please enter a valid email address.';
+        } elseif ($honeypot !== '') {
+            $bookingSuccess = true;
         } else {
             $consultationDetails = "Free Consultation Booking\nDate: " . ($bookDate ?: 'Flexible') . "\nPreferred Time: " . ($bookSlot ?: 'Flexible') . "\nGoal: " . ($userGoal ?: 'General Fitness');
             $fullGoal = 'Free Consultation (' . ($bookDate ?: 'Pending') . ' ' . ($bookSlot ?: '') . ')';
@@ -73,6 +82,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
+$isPreview = is_admin_preview();
+$sections = get_homepage_sections($isPreview);
+$hp = get_homepage_content($isPreview);
+
+// Default Bio Quotes with CMS override
+$defaultBioQuotes = [
+    [
+        'quote_en' => 'Professional and utilizes a scientific approach to training.',
+        'author_en' => 'Henry James — Executive & Boxer'
+    ],
+    [
+        'quote_en' => 'In 6 months my power and agility skyrocketed without any joint pain.',
+        'author_en' => 'Farhad K. — Software Architect'
+    ],
+    [
+        'quote_en' => 'Clear instructions, dedicated attention, and actual results.',
+        'author_en' => 'Sarah M. — Triathlete'
+    ]
+];
+$rawBioQuotes = hp_json($hp, 'bio', 'quotes', $defaultBioQuotes);
+$jsBioQuotes = [];
+foreach ($rawBioQuotes as $q) {
+    $qText = $q['quote_en'] ?? '';
+    $qAuth = $q['author_en'] ?? '';
+    if ($qText !== '') {
+        $jsBioQuotes[] = [
+            'text' => '“' . $qText . '”',
+            'author' => $qAuth,
+        ];
+    }
+}
+
 $pageTitle = ($title !== '' ? $title : SITE_NAME) . ' — Physical Excellence, Boxing & Personal Training';
 
 require dirname(__DIR__) . '/includes/public_header.php';
@@ -80,120 +121,200 @@ require dirname(__DIR__) . '/includes/public_header.php';
 <link rel="stylesheet" href="<?= e(url('assets/css/editorial-home.css')) ?>">
 
 <div class="editorial-home">
+<?php foreach ($sections as $sec): 
+    $secKey = $sec['section_key'] ?? '';
+?>
+
+    <?php if ($secKey === 'hero'): 
+        $heroHeadline = hp_field($hp, 'hero', 'headline', $lang, 'EARN IT.');
+        $tag1 = hp_field($hp, 'hero', 'tagline_1', $lang, 'Your Confidence,');
+        $tag2 = hp_field($hp, 'hero', 'tagline_2', $lang, 'Your Strength,');
+        $tag3 = hp_field($hp, 'hero', 'tagline_3', $lang, 'Your Walk.');
+        $bgLtr = hp_field($hp, 'hero', 'bg_image', 'en', 'assets/images/hero-earn-it.webp');
+        $bgRtl = hp_field($hp, 'hero', 'bg_image_rtl', 'en', 'assets/images/hero-earn-it-rtl.webp');
+
+        $defaultHighlights = [
+            [
+                'icon' => 'award',
+                'title_en' => '13+ Years in the Ring',
+                'desc_en' => 'Championship coaching & competitive experience',
+                'link' => '#bio'
+            ],
+            [
+                'icon' => 'dumbbell',
+                'title_en' => 'Personal Training & Boxing',
+                'desc_en' => 'Tailored 1-on-1 strength & conditioning',
+                'link' => '#sparring'
+            ],
+            [
+                'icon' => 'map-pin',
+                'title_en' => 'Kuala Lumpur & Online',
+                'desc_en' => 'Weight training, fat loss & athletic programming',
+                'link' => '#consultation'
+            ]
+        ];
+        $highlights = hp_json($hp, 'hero', 'highlights', $defaultHighlights);
+
+        $heroStyle = sprintf(
+            "--hero-bg-url: url('%s'); --hero-bg-rtl-url: url('%s');",
+            e(url($bgLtr)),
+            e(url($bgRtl))
+        );
+    ?>
     <!-- ======================================================================
          Section B: Cinematic Full-Width Hero Section (Reference: EARN IT.)
          ====================================================================== -->
-    <section class="ed-hero-section" id="hero">
+    <section class="ed-hero-section" id="hero" style="<?= $heroStyle ?>">
         <div class="ed-hero-container">
             <div class="ed-hero-main-content">
-                <h1 class="ed-hero-headline">EARN IT.</h1>
+                <h1 class="ed-hero-headline"><?= e($heroHeadline) ?></h1>
                 <div class="ed-hero-tagline">
-                    <span class="ed-tagline-line">Your Confidence,</span>
-                    <span class="ed-tagline-line">Your Strength,</span>
-                    <span class="ed-tagline-line">Your Walk.</span>
+                    <?php if ($tag1 !== ''): ?><span class="ed-tagline-line"><?= e($tag1) ?></span><?php endif; ?>
+                    <?php if ($tag2 !== ''): ?><span class="ed-tagline-line"><?= e($tag2) ?></span><?php endif; ?>
+                    <?php if ($tag3 !== ''): ?><span class="ed-tagline-line"><?= e($tag3) ?></span><?php endif; ?>
                 </div>
             </div>
 
             <!-- Bottom Information Highlights (3 Items horizontally aligned) -->
             <div class="ed-hero-highlights">
+                <?php foreach ($highlights as $hl): 
+                    $hlTitle = $hl['title_en'] ?? '';
+                    $hlDesc = $hl['desc_en'] ?? '';
+                    $hlIcon = $hl['icon'] ?? 'award';
+                ?>
                 <div class="ed-highlight-item">
                     <div class="ed-highlight-icon">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
-                        </svg>
+                        <?= render_highlight_icon($hlIcon) ?>
                     </div>
                     <div class="ed-highlight-text">
-                        <strong class="ed-highlight-title">13+ Years in the Ring</strong>
-                        <span class="ed-highlight-desc">Championship coaching &amp; competitive experience</span>
+                        <strong class="ed-highlight-title"><?= e($hlTitle) ?></strong>
+                        <span class="ed-highlight-desc"><?= e($hlDesc) ?></span>
                     </div>
                 </div>
-
-                <div class="ed-highlight-item">
-                    <div class="ed-highlight-icon">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 5v14M18 5v14M2 9h4v6H2zM18 9h4v6h-4zM6 12h12"/>
-                        </svg>
-                    </div>
-                    <div class="ed-highlight-text">
-                        <strong class="ed-highlight-title">Personal Training &amp; Boxing</strong>
-                        <span class="ed-highlight-desc">Tailored 1-on-1 strength &amp; conditioning</span>
-                    </div>
-                </div>
-
-                <div class="ed-highlight-item">
-                    <div class="ed-highlight-icon">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/>
-                            <circle cx="12" cy="10" r="3"/>
-                        </svg>
-                    </div>
-                    <div class="ed-highlight-text">
-                        <strong class="ed-highlight-title">Kuala Lumpur &amp; Online</strong>
-                        <span class="ed-highlight-desc">Weight training, fat loss &amp; athletic programming</span>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
+    <?php if ($secKey === 'basics'): 
+        $basicsImg = hp_field($hp, 'basics', 'image', $lang, 'assets/images/basics-gym.jpg');
+        $basicsEyebrow = hp_field($hp, 'basics', 'eyebrow', $lang, 'EFT · Philosophy & Foundations');
+        $basicsTitle = hp_field($hp, 'basics', 'title', $lang, 'Back to basics.');
+        $basicsLead = hp_field($hp, 'basics', 'lead', $lang, "It's about EFT (Effort, Focus and Technique). Mastery comes from the fundamentals — stripping away the noise and building true strength, coordination, and mental toughness.");
+        $basicsDesc = hp_field($hp, 'basics', 'desc', $lang, "Whether in the ring or on the gym floor, precision and consistency always win. No gimmicks, no cookie-cutter templates. Every movement has purpose, every round builds capability, and every workout is tailored to your real physiological adaptation.");
+        $btn1Text = hp_field($hp, 'basics', 'btn1_text', $lang, 'Explore Packages');
+        $btn1Url = hp_field($hp, 'basics', 'btn1_url', $lang, 'packages.php');
+        $btn2Text = hp_field($hp, 'basics', 'btn2_text', $lang, 'Book Free Consultation');
+        $btn2Url = hp_field($hp, 'basics', 'btn2_url', $lang, '#consultation');
+    ?>
     <!-- ======================================================================
          Section C: Introductory Content Section ("Back to Basics")
          ====================================================================== -->
     <section class="ed-basics-section" id="basics">
         <div class="ed-basics-grid">
             <div class="ed-basics-artwork">
-                <img src="<?= e(url('assets/images/basics-gym.jpg')) ?>" 
-                     alt="Boxing Gym & Physical Fundamentals" 
+                <img src="<?= e(url($basicsImg)) ?>" 
+                     alt="<?= e($basicsTitle) ?>" 
                      class="ed-basics-calligraphy"
                      loading="lazy">
             </div>
 
             <div class="ed-basics-content">
-                <span class="ed-basics-eyebrow">EFT · Philosophy &amp; Foundations</span>
-                <h2 class="ed-basics-title">Back to basics.</h2>
+                <span class="ed-basics-eyebrow"><?= e($basicsEyebrow) ?></span>
+                <h2 class="ed-basics-title"><?= e($basicsTitle) ?></h2>
                 <p class="ed-basics-lead">
-                    It's about EFT (Effort, Focus and Technique). Mastery comes from the fundamentals — stripping away the noise and building true strength, coordination, and mental toughness.
+                    <?= nl2br(e($basicsLead)) ?>
                 </p>
                 <p class="ed-basics-desc">
-                    Whether in the ring or on the gym floor, precision and consistency always win. No gimmicks, no cookie-cutter templates. Every movement has purpose, every round builds capability, and every workout is tailored to your real physiological adaptation.
+                    <?= nl2br(e($basicsDesc)) ?>
                 </p>
                 <div class="cta-row">
-                    <a href="<?= e(url($lang . '/packages.php')) ?>" class="btn-cta">Explore Packages</a>
-                    <a href="#consultation" class="btn-outline">Book Free Consultation</a>
+                    <?php if ($btn1Text !== ''): ?>
+                        <a href="<?= e(resolve_hp_url($btn1Url, $lang)) ?>" class="btn-cta"><?= e($btn1Text) ?></a>
+                    <?php endif; ?>
+                    <?php if ($btn2Text !== ''): ?>
+                        <a href="<?= e(resolve_hp_url($btn2Url, $lang)) ?>" class="btn-outline"><?= e($btn2Text) ?></a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
+    <?php if ($secKey === 'sparring'): 
+        $sparringEyebrow = hp_field($hp, 'sparring', 'eyebrow', $lang, 'Philosophy / Mission');
+        $sparringTitle = hp_field($hp, 'sparring', 'title', $lang, 'Where do you want to be?');
+        $sparringText = hp_field($hp, 'sparring', 'text', $lang, '1-1 Personal Training or Group Training in dedicated sessions. Tailored for your specific physiological needs and athletic aspirations.');
+        $sparringImg = hp_field($hp, 'sparring', 'image', $lang, 'assets/images/sparring-boxers.jpg');
+        $defaultFeaturesStr = "Biomechanically sound weight training & posture correction\nAuthentic boxing fundamentals: footwork, head movement & power\nSustainable body recomposition & accelerated fat loss\nInjury prevention with progressive load management";
+        $sparringFeatures = parse_features(hp_field($hp, 'sparring', 'features', $lang, $defaultFeaturesStr));
+        $sparringBtnText = hp_field($hp, 'sparring', 'btn_text', $lang, 'Book a Session');
+        $sparringBtnUrl = hp_field($hp, 'sparring', 'btn_url', $lang, '#consultation');
+    ?>
     <!-- ======================================================================
          Section D: Large Illustrated Content Section ("Where do you want to be?")
          ====================================================================== -->
     <section class="ed-sparring-section" id="sparring">
         <div class="ed-sparring-container">
             <div class="ed-sparring-content">
-                <span class="ed-sparring-eyebrow">Philosophy / Mission</span>
-                <h2 class="ed-sparring-title">Where do you want to be?</h2>
+                <span class="ed-sparring-eyebrow"><?= e($sparringEyebrow) ?></span>
+                <h2 class="ed-sparring-title"><?= e($sparringTitle) ?></h2>
                 <p class="ed-sparring-text">
-                    1-1 Personal Training or Group Training in dedicated sessions. Tailored for your specific physiological needs and athletic aspirations.
+                    <?= nl2br(e($sparringText)) ?>
                 </p>
                 <ul class="ed-sparring-features">
-                    <li class="ed-sparring-feature-item">Biomechanically sound weight training &amp; posture correction</li>
-                    <li class="ed-sparring-feature-item">Authentic boxing fundamentals: footwork, head movement &amp; power</li>
-                    <li class="ed-sparring-feature-item">Sustainable body recomposition &amp; accelerated fat loss</li>
-                    <li class="ed-sparring-feature-item">Injury prevention with progressive load management</li>
+                    <?php foreach ($sparringFeatures as $feat): ?>
+                        <li class="ed-sparring-feature-item"><?= e($feat) ?></li>
+                    <?php endforeach; ?>
                 </ul>
-                <a href="#consultation" class="btn-cta">Book a Session</a>
+                <?php if ($sparringBtnText !== ''): ?>
+                    <a href="<?= e(resolve_hp_url($sparringBtnUrl, $lang)) ?>" class="btn-cta"><?= e($sparringBtnText) ?></a>
+                <?php endif; ?>
             </div>
 
             <div class="ed-sparring-artwork">
-                <img src="<?= e(url('assets/images/sparring-boxers.jpg')) ?>" 
-                     alt="Boxing Sparring & Padwork Coaching" 
+                <img src="<?= e(url($sparringImg)) ?>" 
+                     alt="<?= e($sparringTitle) ?>" 
                      class="ed-sparring-art"
                      loading="lazy">
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
+    <?php if ($secKey === 'booking'): 
+        $chatTitle = hp_field($hp, 'booking', 'chat_title', $lang, 'Start a chat.');
+        $defaultChatCards = [
+            [
+                'icon' => 'phone',
+                'title_en' => 'Phone or Call',
+                'val_en' => $phone,
+                'btn_en' => 'Call Now',
+                'link' => 'tel:' . preg_replace('/[^0-9+]/', '', $phone)
+            ],
+            [
+                'icon' => 'mail',
+                'title_en' => 'Send an Email',
+                'val_en' => $email,
+                'btn_en' => 'Send Email',
+                'link' => 'mailto:' . $email
+            ],
+            [
+                'icon' => 'whatsapp',
+                'title_en' => 'WhatsApp Chat',
+                'val_en' => 'Instant direct reply',
+                'btn_en' => 'Message',
+                'link' => 'https://wa.me/' . $whatsappText
+            ]
+        ];
+        $chatCards = hp_json($hp, 'booking', 'chat_cards', $defaultChatCards);
+        $calTitle = hp_field($hp, 'booking', 'calendar_title', $lang, 'Book Your Free Consultation:');
+        $calSubtitle = hp_field($hp, 'booking', 'calendar_subtitle', $lang, 'Select an available date and time slot to discuss your training goals and schedule.');
+        $timeSlots = parse_features(hp_field($hp, 'booking', 'time_slots', $lang, "09:00 AM\n11:00 AM\n02:00 PM\n05:00 PM\n07:00 PM\nFlexible"));
+        $submitBtnText = hp_field($hp, 'booking', 'submit_btn_text', $lang, 'Confirm Consultation Request');
+        $firstSlot = $timeSlots[0] ?? '09:00 AM';
+    ?>
     <!-- ======================================================================
          Section E: Consultation or Primary Action Section
          ("Start a chat" + "Book Your Free Consultation")
@@ -202,49 +323,33 @@ require dirname(__DIR__) . '/includes/public_header.php';
         <div class="ed-booking-inner">
             <!-- Top Subsection: "Start a chat." -->
             <div class="ed-chat-bar">
-                <h2 class="ed-chat-title">Start a chat.</h2>
+                <h2 class="ed-chat-title"><?= e($chatTitle) ?></h2>
                 <div class="ed-chat-options">
-                    <a href="tel:<?= e(preg_replace('/[^0-9+]/', '', $phone)) ?>" class="ed-chat-card">
+                    <?php foreach ($chatCards as $card): 
+                        $cTitle = $card['title_en'] ?? '';
+                        $cVal = $card['val_en'] ?? '';
+                        $cBtn = $card['btn_en'] ?? '';
+                        $cLink = sanitize_cms_url((string) ($card['link'] ?? '#')) ?: '#';
+                        $cIcon = $card['icon'] ?? 'phone';
+                        $isExt = str_starts_with($cLink, 'http');
+                    ?>
+                    <a href="<?= e($cLink) ?>" <?= $isExt ? 'target="_blank" rel="noopener"' : '' ?> class="ed-chat-card">
                         <div class="ed-chat-icon">
-                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                            </svg>
+                            <?= render_chat_icon($cIcon) ?>
                         </div>
-                        <h3>Phone or Call</h3>
-                        <p><?= e($phone) ?></p>
-                        <span class="ed-chat-btn-label">Call Now</span>
+                        <h3><?= e($cTitle) ?></h3>
+                        <p><?= e($cVal) ?></p>
+                        <span class="ed-chat-btn-label"><?= e($cBtn) ?></span>
                     </a>
-
-                    <a href="mailto:<?= e($email) ?>" class="ed-chat-card">
-                        <div class="ed-chat-icon">
-                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                <polyline points="22,6 12,13 2,6"/>
-                            </svg>
-                        </div>
-                        <h3>Send an Email</h3>
-                        <p><?= e($email) ?></p>
-                        <span class="ed-chat-btn-label">Send Email</span>
-                    </a>
-
-                    <a href="https://wa.me/<?= e($whatsappText) ?>" target="_blank" rel="noopener" class="ed-chat-card">
-                        <div class="ed-chat-icon">
-                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                                <path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.5s-.5-1.3-.7-1.8-.4-.4-.5-.4h-.5a1 1 0 0 0-.7.3A3 3 0 0 0 6.3 9c0 1.8 1.3 3.5 1.5 3.7s2.5 3.9 6.1 5.2c2.2.8 2.6.6 3.1.6s1.4-.6 1.6-1.1.2-1 .1-1.1-.3-.2-.5-.3z"/>
-                            </svg>
-                        </div>
-                        <h3>WhatsApp Chat</h3>
-                        <p>Instant direct reply</p>
-                        <span class="ed-chat-btn-label">Message</span>
-                    </a>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
             <!-- Bottom Subsection: "Book Your Free Consultation:" with Calendar -->
             <div class="ed-calendar-wrapper">
                 <div class="ed-calendar-heading-row">
-                    <h3 class="ed-calendar-title">Book Your Free Consultation:</h3>
-                    <p class="ed-calendar-subtitle">Select an available date and time slot to discuss your training goals and schedule.</p>
+                    <h3 class="ed-calendar-title"><?= e($calTitle) ?></h3>
+                    <p class="ed-calendar-subtitle"><?= e($calSubtitle) ?></p>
                 </div>
 
                 <?php if ($bookingSuccess): ?>
@@ -282,17 +387,17 @@ require dirname(__DIR__) . '/includes/public_header.php';
                         <?= form_field() ?>
                         <input type="hidden" name="action" value="book_consultation">
                         <input type="hidden" name="consultation_date" id="ed-selected-date" value="<?= date('Y-m-d') ?>">
-                        <input type="hidden" name="consultation_slot" id="ed-selected-slot" value="09:00 AM">
+                        <input type="hidden" name="consultation_slot" id="ed-selected-slot" value="<?= e($firstSlot) ?>">
+                        <div class="hp-field" aria-hidden="true">
+                            <label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+                        </div>
 
                         <div>
                             <span class="ed-slots-label">Select Preferred Time Slot:</span>
                             <div class="ed-slots-grid">
-                                <div class="ed-slot-pill is-selected" data-time="09:00 AM">09:00 AM</div>
-                                <div class="ed-slot-pill" data-time="11:00 AM">11:00 AM</div>
-                                <div class="ed-slot-pill" data-time="02:00 PM">02:00 PM</div>
-                                <div class="ed-slot-pill" data-time="05:00 PM">05:00 PM</div>
-                                <div class="ed-slot-pill" data-time="07:00 PM">07:00 PM</div>
-                                <div class="ed-slot-pill" data-time="Flexible">Flexible</div>
+                                <?php foreach ($timeSlots as $sIdx => $slot): ?>
+                                    <div class="ed-slot-pill <?= $sIdx === 0 ? 'is-selected' : '' ?>" data-time="<?= e($slot) ?>"><?= e($slot) ?></div>
+                                <?php endforeach; ?>
                             </div>
                         </div>
 
@@ -322,13 +427,29 @@ require dirname(__DIR__) . '/includes/public_header.php';
                             </select>
                         </div>
 
-                        <button type="submit" class="btn-cta ed-booking-submit">Confirm Consultation Request</button>
+                        <button type="submit" class="btn-cta ed-booking-submit"><?= e($submitBtnText) ?></button>
                     </form>
                 </div>
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
+    <?php if ($secKey === 'bio'): 
+        $bioImg = hp_field($hp, 'bio', 'image', $lang, 'assets/images/coach-mori.jpg');
+        $bioEyebrow = hp_field($hp, 'bio', 'eyebrow', $lang, 'A Brief Bio');
+        $bioTitle = hp_field($hp, 'bio', 'title', $lang, 'Get to know me.');
+        $bioSubtitle = hp_field($hp, 'bio', 'subtitle', $lang, '(Mori — smile in Persian)');
+        $defaultNarrative = "Since my teenage years, physical excellence has always been my passion.\n\nOver the years, I have studied and tried many strategies to achieve it, realizing that the journey itself is as valuable as the destination and that having an intellectually sound plan in place is of paramount importance.\n\nTherefore, I am confident in stating that with my knowledge and first-hand experience, I will guide you to reach your goals faster and injury-free by creating bespoke programs tailored to your personal needs and current limitations.\n\nWith over 13 years of training and coaching experience, I have developed a tested, results-focused method. My clients' results and feedback have proven its efficacy.\n\nLet me help you unlock the fittest version of yourself.";
+        $bioNarrative = hp_field($hp, 'bio', 'narrative', $lang, $defaultNarrative);
+        $bioBtnText = hp_field($hp, 'bio', 'btn_text', $lang, 'Learn More About Mori');
+        $bioBtnUrl = hp_field($hp, 'bio', 'btn_url', $lang, 'about.php');
+        $paragraphs = preg_split('/\r\n\r\n|\n\n/', trim($bioNarrative)) ?: [];
+        $firstQuote = $jsBioQuotes[0] ?? [
+            'text' => '“Professional and utilizes a scientific approach to training.”',
+            'author' => 'Henry James — Executive & Boxer'
+        ];
+    ?>
     <!-- ======================================================================
          Section F: About or Introduction Section ("Get to know me.")
          ====================================================================== -->
@@ -336,7 +457,7 @@ require dirname(__DIR__) . '/includes/public_header.php';
         <div class="ed-bio-container">
             <!-- Left: Visual Illustration + Testimonial Badge -->
             <div class="ed-bio-visual-col">
-                <img src="<?= e(url('assets/images/coach-mori.jpg')) ?>" 
+                <img src="<?= e(url($bioImg)) ?>" 
                      alt="Coach Mori Portrait" 
                      class="ed-bio-artwork"
                      loading="lazy">
@@ -344,99 +465,102 @@ require dirname(__DIR__) . '/includes/public_header.php';
                 <!-- Testimonial Quote under coach illustration -->
                 <div class="ed-bio-quote-card">
                     <p class="ed-bio-quote-text" id="ed-bio-quote-text">
-                        &ldquo;Professional and utilizes a scientific approach to training.&rdquo;
+                        <?= e($firstQuote['text']) ?>
                     </p>
                     <div class="ed-bio-quote-author" id="ed-bio-quote-author">
-                        Henry James — Executive &amp; Boxer
+                        <?= e($firstQuote['author']) ?>
                     </div>
                     <div class="ed-bio-dots">
-                        <button type="button" class="ed-bio-dot is-active" aria-label="Quote 1"></button>
-                        <button type="button" class="ed-bio-dot" aria-label="Quote 2"></button>
-                        <button type="button" class="ed-bio-dot" aria-label="Quote 3"></button>
+                        <?php foreach ($jsBioQuotes as $qIdx => $qItem): ?>
+                            <button type="button" class="ed-bio-dot <?= $qIdx === 0 ? 'is-active' : '' ?>" aria-label="Quote <?= $qIdx + 1 ?>"></button>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
 
             <!-- Right: Bio Narrative Copy -->
             <div class="ed-bio-content">
-                <span class="ed-bio-eyebrow">A Brief Bio</span>
+                <span class="ed-bio-eyebrow"><?= e($bioEyebrow) ?></span>
                 <h2 class="ed-bio-title">
-                    Get to know me.
-                    <span class="farsi-subtitle">(Mori — smile in Persian)</span>
+                    <?= e($bioTitle) ?>
+                    <?php if ($bioSubtitle !== ''): ?>
+                        <span class="farsi-subtitle"><?= e($bioSubtitle) ?></span>
+                    <?php endif; ?>
                 </h2>
 
                 <div class="ed-bio-narrative">
-                    <p>
-                        Since my teenage years, physical excellence has always been my passion.
-                    </p>
-                    <p>
-                        Over the years, I have studied and tried many strategies to achieve it, realizing that the journey itself is as valuable as the destination and that having an intellectually sound plan in place is of paramount importance.
-                    </p>
-                    <p>
-                        Therefore, I am confident in stating that with my knowledge and first-hand experience, I will guide you to reach your goals faster and injury-free by creating bespoke programs tailored to your personal needs and current limitations.
-                    </p>
-                    <p>
-                        With over 13 years of training and coaching experience, I have developed a tested, results-focused method. My clients' results and feedback have proven its efficacy.
-                    </p>
-                    <p>
-                        Let me help you unlock the fittest version of yourself.
-                    </p>
+                    <?php foreach ($paragraphs as $p): 
+                        if (trim($p) === '') continue;
+                    ?>
+                        <p><?= nl2br(e(trim($p))) ?></p>
+                    <?php endforeach; ?>
                 </div>
 
-                <div class="ed-bio-btn-row">
-                    <a href="<?= e(url($lang . '/about.php')) ?>" class="btn-outline">Learn More About Mori</a>
-                </div>
+                <?php if ($bioBtnText !== ''): ?>
+                    <div class="ed-bio-btn-row">
+                        <a href="<?= e(resolve_hp_url($bioBtnUrl, $lang)) ?>" class="btn-outline"><?= e($bioBtnText) ?></a>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
+    <?php if ($secKey === 'gallery'): 
+        $galTitle = hp_field($hp, 'gallery', 'title', $lang, 'Our Gallery');
+        $galSubtitle = hp_field($hp, 'gallery', 'subtitle', $lang, 'Check out our clients results and transformations');
+        $defaultGalItems = [
+            [
+                'image' => 'assets/images/gallery-sara.jpg',
+                'name_en' => 'Sara',
+                'tag_en' => 'Boxing & Conditioning',
+                'quote_en' => 'Boxing training with Mori completely transformed my stamina, reaction speed, and mental focus. His technique-first methodology makes every single round challenging and rewarding.'
+            ],
+            [
+                'image' => 'assets/images/gallery-megan.jpg',
+                'name_en' => 'Megan',
+                'tag_en' => 'Fat Loss & Strength',
+                'quote_en' => 'Lost 11kg and gained incredible core and back definition. Mori designed a structured strength regimen that worked seamlessly with my demanding schedule. Best trainer in KL.'
+            ]
+        ];
+        $galItems = hp_json($hp, 'gallery', 'items', $defaultGalItems);
+        $galBtnText = hp_field($hp, 'gallery', 'btn_text', $lang, 'View Full Gallery');
+        $galBtnUrl = hp_field($hp, 'gallery', 'btn_url', $lang, 'gallery.php');
+    ?>
     <!-- ======================================================================
          Section G: Gallery or Visual Showcase ("Our Gallery")
          ====================================================================== -->
     <section class="ed-gallery-section" id="gallery">
         <div class="ed-gallery-header">
-            <h2 class="ed-gallery-title">Our Gallery</h2>
-            <p class="ed-gallery-subtitle">Check out our clients results and transformations</p>
+            <h2 class="ed-gallery-title"><?= e($galTitle) ?></h2>
+            <p class="ed-gallery-subtitle"><?= e($galSubtitle) ?></p>
         </div>
 
         <div class="ed-gallery-cards-grid">
-            <!-- Card 1: Sara -->
+            <?php foreach ($galItems as $gCard): 
+                $gImg = $gCard['image'] ?? 'assets/images/gallery-sara.jpg';
+                $gName = $gCard['name_en'] ?? '';
+                $gTag = $gCard['tag_en'] ?? '';
+                $gQuote = $gCard['quote_en'] ?? '';
+            ?>
             <div class="ed-gallery-card">
                 <div class="ed-gallery-media-wrapper">
-                    <img src="<?= e(url('assets/images/gallery-sara.jpg')) ?>" 
-                         alt="Client Sara - Boxing & Agility Results" 
+                    <img src="<?= e(url($gImg)) ?>" 
+                         alt="Client <?= e($gName) ?>" 
                          class="ed-gallery-image"
                          loading="lazy">
                 </div>
                 <div class="ed-gallery-card-body">
                     <div class="ed-gallery-client-header">
-                        <h3 class="ed-gallery-client-name">Sara</h3>
-                        <span class="ed-gallery-client-tag">Boxing &amp; Conditioning</span>
+                        <h3 class="ed-gallery-client-name"><?= e($gName) ?></h3>
+                        <span class="ed-gallery-client-tag"><?= e($gTag) ?></span>
                     </div>
                     <p class="ed-gallery-client-quote">
-                        &ldquo;Boxing training with Mori completely transformed my stamina, reaction speed, and mental focus. His technique-first methodology makes every single round challenging and rewarding.&rdquo;
+                        &ldquo;<?= e($gQuote) ?>&rdquo;
                     </p>
                 </div>
             </div>
-
-            <!-- Card 2: Megan -->
-            <div class="ed-gallery-card">
-                <div class="ed-gallery-media-wrapper">
-                    <img src="<?= e(url('assets/images/gallery-megan.jpg')) ?>" 
-                         alt="Client Megan - Strength & Fat Loss Transformation" 
-                         class="ed-gallery-image"
-                         loading="lazy">
-                </div>
-                <div class="ed-gallery-card-body">
-                    <div class="ed-gallery-client-header">
-                        <h3 class="ed-gallery-client-name">Megan</h3>
-                        <span class="ed-gallery-client-tag">Fat Loss &amp; Strength</span>
-                    </div>
-                    <p class="ed-gallery-client-quote">
-                        &ldquo;Lost 11kg and gained incredible core and back definition. Mori designed a structured strength regimen that worked seamlessly with my demanding schedule. Best trainer in KL.&rdquo;
-                    </p>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
 
         <!-- Gallery Controls -->
@@ -448,13 +572,21 @@ require dirname(__DIR__) . '/includes/public_header.php';
             </div>
             <div class="ed-gallery-arrows">
                 <button type="button" class="ed-gallery-arrow-btn" id="ed-gallery-prev" aria-label="Previous Showcase">&#10094;</button>
-                <a href="<?= e(url($lang . '/gallery.php')) ?>" class="btn-outline" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">View Full Gallery</a>
+                <?php if ($galBtnText !== ''): ?>
+                    <a href="<?= e(resolve_hp_url($galBtnUrl, $lang)) ?>" class="btn-outline" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;"><?= e($galBtnText) ?></a>
+                <?php endif; ?>
                 <button type="button" class="ed-gallery-arrow-btn" id="ed-gallery-next" aria-label="Next Showcase">&#10095;</button>
             </div>
         </div>
     </section>
+    <?php endif; ?>
+
+<?php endforeach; ?>
 </div>
 
+<script>
+window.MORIS_BIO_QUOTES = <?= json_encode($jsBioQuotes, JSON_UNESCAPED_UNICODE) ?>;
+</script>
 <script src="<?= e(url('assets/js/editorial-home.js')) ?>"></script>
 <?php
 require dirname(__DIR__) . '/includes/public_footer.php';

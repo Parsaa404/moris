@@ -65,14 +65,8 @@ else
 fi
 mysql --protocol=socket -e "GRANT ALL PRIVILEGES ON \`${MORIS_DB_NAME}\`.* TO '${MORIS_DB_USER}'@'localhost'; FLUSH PRIVILEGES;"
 
-TABLE_COUNT="$(mysql --protocol=socket -N -e \
-  "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='${MORIS_DB_NAME}';")"
-if [[ "${TABLE_COUNT:-0}" -eq 0 ]]; then
-  log "Importing schema..."
-  mysql --protocol=socket "$MORIS_DB_NAME" < "$MORIS_WEB_ROOT/sql/schema.sql"
-else
-  log "Schema already present — skip import."
-fi
+log "Ensuring database schema & seed tables..."
+mysql --protocol=socket "$MORIS_DB_NAME" < "$MORIS_WEB_ROOT/sql/schema.sql"
 
 log "Writing includes/config.php ..."
 export MORIS_WEB_ROOT MORIS_DB_HOST MORIS_DB_PORT MORIS_DB_NAME MORIS_DB_USER MORIS_DB_PASS

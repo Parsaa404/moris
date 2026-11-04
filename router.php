@@ -16,6 +16,14 @@ if ($uri === false || $uri === '') {
 $root = __DIR__;
 $fsPath = $root . $uri;
 
+// Block direct access to internal directories & non-web files in local dev server
+if (preg_match('#^/(includes|sql|vendor|deploy|scratch|postman|\.git|\.postman)(/|$)#i', $uri)
+    || preg_match('#\.(md|sql|env|sh|bat|command)$#i', $uri)) {
+    http_response_code(403);
+    echo '403 Forbidden';
+    return true;
+}
+
 if ($uri !== '/' && is_dir($fsPath)) {
     $index = rtrim($fsPath, '/\\') . '/index.php';
     if (is_file($index)) {

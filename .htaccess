@@ -13,15 +13,10 @@ DirectoryIndex index.php
     # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 </IfModule>
 
-# Block direct web access to sensitive folders
+# Block direct web access to sensitive folders and files
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^includes/ - [F,L]
-    RewriteRule ^sql/ - [F,L]
-    RewriteRule ^vendor/ - [F,L]
-    RewriteRule (^|/)\.git - [F,L]
-    RewriteRule (^|/)\.env - [F,L]
-    RewriteRule (^|/)DEPLOYMENT\.md$ - [F,L]
-    RewriteRule (^|/)PROJECT\.md$ - [F,L]
-    RewriteRule (^|/)SECURITY\.md$ - [F,L]
+    RewriteRule ^(includes|sql|vendor|deploy|scratch|postman)/ - [F,L]
+    RewriteRule (^|/)\. - [F,L]
+    RewriteRule \.(md|sql|env|sh|bat|command)$ - [F,L]
 </IfModule>

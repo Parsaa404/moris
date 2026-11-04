@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
       dayBtn.textContent = day;
 
       const cellDate = new Date(year, month, day);
-      const isPast = cellDate.setHours(0,0,0,0) < today.setHours(0,0,0,0);
+      const isPast = cellDate.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0);
       const isToday = (
         day === today.getDate() &&
         month === today.getMonth() &&
@@ -141,20 +141,22 @@ document.addEventListener('DOMContentLoaded', function () {
   // -------------------------------------------------------------------------
   // 2. Testimonial Quote Switcher in Bio Section
   // -------------------------------------------------------------------------
-  const quotes = [
-    {
-      text: "“Professional and utilizes a scientific approach to training.”",
-      author: "Henry James — Executive & Amateur Boxer"
-    },
-    {
-      text: "“Mori completely restructured my movement mechanics and eliminated chronic shoulder pain while adding 15kg to my bench.”",
-      author: "Marcus Chen — Strength Athlete"
-    },
-    {
-      text: "“The sharpest boxing coach in Kuala Lumpur. Real footwork, real discipline, real results.”",
-      author: "David Lee — Boxing Client"
-    }
-  ];
+  const quotes = (Array.isArray(window.MORIS_BIO_QUOTES) && window.MORIS_BIO_QUOTES.length > 0)
+    ? window.MORIS_BIO_QUOTES
+    : [
+      {
+        text: "“Professional and utilizes a scientific approach to training.”",
+        author: "Henry James — Executive & Amateur Boxer"
+      },
+      {
+        text: "“Mori completely restructured my movement mechanics and eliminated chronic shoulder pain while adding 15kg to my bench.”",
+        author: "Marcus Chen — Strength Athlete"
+      },
+      {
+        text: "“The sharpest boxing coach in Kuala Lumpur. Real footwork, real discipline, real results.”",
+        author: "David Lee — Boxing Client"
+      }
+    ];
 
   const bioQuoteText = document.getElementById('ed-bio-quote-text');
   const bioQuoteAuthor = document.getElementById('ed-bio-quote-author');

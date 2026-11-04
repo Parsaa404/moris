@@ -163,13 +163,49 @@ CREATE TABLE IF NOT EXISTS `contact_messages` (
   KEY `idx_contact_created` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- --------------------------------------------------------
+-- Homepage sections (order & visibility — live + draft)
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `homepage_sections` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `section_key` VARCHAR(50) NOT NULL,
+  `name_en` VARCHAR(100) NOT NULL,
+  `name_fa` VARCHAR(100) NOT NULL,
+  `sort_order` INT NOT NULL DEFAULT 0,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `draft_sort_order` INT NOT NULL DEFAULT 0,
+  `is_draft_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_homepage_section_key` (`section_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- Homepage content (bilingual fields & JSON — live + draft)
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `homepage_content` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `section_key` VARCHAR(50) NOT NULL,
+  `content_key` VARCHAR(100) NOT NULL,
+  `value_en` MEDIUMTEXT NULL,
+  `value_fa` MEDIUMTEXT NULL,
+  `draft_value_en` MEDIUMTEXT NULL,
+  `draft_value_fa` MEDIUMTEXT NULL,
+  `content_type` VARCHAR(30) NOT NULL DEFAULT 'text',
+  `label` VARCHAR(150) NULL,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_section_content` (`section_key`, `content_key`),
+  KEY `idx_section` (`section_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- --------------------------------------------------------
--- Demo / placeholder data (replace everything in admin after install)
+-- Demo / placeholder data (idempotent — safe to re-run)
 -- --------------------------------------------------------
 
-INSERT INTO `site_settings` (`setting_key`, `setting_value`) VALUES
+INSERT IGNORE INTO `site_settings` (`setting_key`, `setting_value`) VALUES
 ('site_name', 'Moris'),
 ('tagline_en', 'Personal Training · Boxing · Fat Loss'),
 ('tagline_fa', 'تمرین شخصی · بوکس · کاهش چربی'),
@@ -180,7 +216,7 @@ INSERT INTO `site_settings` (`setting_key`, `setting_value`) VALUES
 ('youtube_url', ''),
 ('default_language', 'en');
 
-INSERT INTO `pages` (`slug`, `title_en`, `title_fa`, `content_en`, `content_fa`) VALUES
+INSERT IGNORE INTO `pages` (`slug`, `title_en`, `title_fa`, `content_en`, `content_fa`) VALUES
 ('home', 'Transform Your Body', 'بدنت را متحول کن',
  '<p>Personal training in Kuala Lumpur. Weight training, conditioning, and boxing — tailored to your goals.</p>',
  '<p>تمرین شخصی در کوالالامپور. تمرینات وزنه، آمادگی جسمانی و بوکس — متناسب با اهداف شما.</p>'),
@@ -191,21 +227,29 @@ INSERT INTO `pages` (`slug`, `title_en`, `title_fa`, `content_en`, `content_fa`)
  '<p>One-on-one personal training, boxing coaching, and online programming for clients worldwide.</p>',
  '<p>تمرین شخصی یک به یک، مربیگری بوکس و برنامه‌ریزی آنلاین برای مشتریان در سراسر جهان.</p>');
 
-INSERT INTO `packages` (`name_en`, `name_fa`, `description_en`, `price`, `currency`, `sessions_count`, `includes_boxing`, `includes_weights`, `sort_order`) VALUES
-('10 Sessions — Weight Training', '۱۰ جلسه — تمرین وزنه',
+INSERT IGNORE INTO `packages` (`id`, `name_en`, `name_fa`, `description_en`, `price`, `currency`, `sessions_count`, `includes_boxing`, `includes_weights`, `sort_order`) VALUES
+(1, '10 Sessions — Weight Training', '۱۰ جلسه — تمرین وزنه',
  'One-on-one weight training in KL. Edit price and details in admin.', 1500.00, 'MYR', 10, 0, 1, 1),
-('10 Sessions — Boxing', '۱۰ جلسه — بوکس',
+(2, '10 Sessions — Boxing', '۱۰ جلسه — بوکس',
  'One-on-one boxing coaching. Edit price and details in admin.', 1500.00, 'MYR', 10, 1, 0, 2),
-('10 Sessions — Weight + Boxing', '۱۰ جلسه — وزنه + بوکس',
+(3, '10 Sessions — Weight + Boxing', '۱۰ جلسه — وزنه + بوکس',
  'Combined program. Edit price and details in admin.', 2000.00, 'MYR', 10, 1, 1, 3);
 
-INSERT INTO `blog_categories` (`name_en`, `name_fa`, `slug`, `sort_order`) VALUES
+INSERT IGNORE INTO `blog_categories` (`name_en`, `name_fa`, `slug`, `sort_order`) VALUES
 ('Client Stories', 'داستان مشتریان', 'client-stories', 1),
 ('Training Tips', 'نکات تمرینی', 'training-tips', 2);
 
-INSERT INTO `gallery_categories` (`name_en`, `name_fa`, `slug`, `sort_order`) VALUES
+INSERT IGNORE INTO `gallery_categories` (`name_en`, `name_fa`, `slug`, `sort_order`) VALUES
 ('Training', 'تمرین', 'training', 1),
 ('Boxing', 'بوکس', 'boxing', 2);
+
+INSERT IGNORE INTO `homepage_sections` (`section_key`, `name_en`, `name_fa`, `sort_order`, `is_active`, `draft_sort_order`, `is_draft_active`) VALUES
+('hero',     'Hero Section (EARN IT)',                        'بخش هیرو (به دستش بیار)',       1, 1, 1, 1),
+('basics',   'Intro / Back to Basics',                        'مقدمه و اصول بنیادین',          2, 1, 2, 1),
+('sparring', 'Illustrated Content / Where Do You Want To Be', 'بخش تصویری و تمرینات',          3, 1, 3, 1),
+('booking',  'Consultation & Chat Booking',                   'رزرو مشاوره و چت مستقیم',       4, 1, 4, 1),
+('bio',      'About Coach Mori',                              'درباره مربی موری',              5, 1, 5, 1),
+('gallery',  'Gallery & Results Showcase',                    'گالری و نتایج شاگردان',         6, 1, 6, 1);
 
 -- Admin user is NOT seeded here.
 -- After import, open /admin/install.php once to create your admin account (Step 2).

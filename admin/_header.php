@@ -18,6 +18,7 @@ $current = basename($_SERVER['PHP_SELF']);
 
 $nav = [
     'index.php'    => 'Dashboard',
+    'homepage.php' => 'Homepage Builder',
     'pages.php'    => 'Pages',
     'packages.php' => 'Packages',
     'gallery.php'  => 'Gallery',
@@ -52,7 +53,10 @@ if (isset($navAlias[$current])) {
     <a class="admin-brand" href="<?= e(url('admin/index.php')) ?>"><?= e(SITE_NAME) ?> <span>Admin</span></a>
     <div class="admin-user">
         <span><?= e($admin['username']) ?></span>
-        <a class="btn btn-ghost" href="<?= e(url('admin/logout.php')) ?>">Log out</a>
+        <form method="post" action="<?= e(url('admin/logout.php')) ?>" class="inline-form">
+            <?= csrf_field() ?>
+            <button type="submit" class="btn btn-ghost">Log out</button>
+        </form>
     </div>
 </header>
 <div class="admin-shell">
