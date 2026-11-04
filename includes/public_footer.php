@@ -35,6 +35,34 @@ $menu = [
 $exploreLabel = $isFa ? 'پیوندها' : 'Explore';
 $contactLabel = $isFa ? 'ارتباط' : 'Get in touch';
 $whatsappText = preg_replace('/[^0-9]/', '', $whatsapp);
+
+// Customizable WhatsApp Floating Button settings from Admin Dashboard / Settings
+$waEnabled = setting('wa_enabled', '1') === '1';
+$waStyle = setting('wa_style', 'pill');
+$waColor = setting('wa_color', 'emerald');
+$waPos = setting('wa_position', 'auto');
+$waPulse = setting('wa_pulse', '1') === '1';
+
+$floatWaNumber = strlen($whatsappText) > 4 ? $whatsappText : '60123456789';
+$rawMsg = $isFa
+    ? setting('wa_msg_fa', 'سلام مربی موری، برای مشاوره و شروع تمرینات پیام می‌دهم.')
+    : setting('wa_msg_en', 'Hi Coach Mori, I would like to inquire about personal training.');
+$floatWaMsg = rawurlencode((string) $rawMsg);
+
+$floatWaLabel = $isFa
+    ? (setting('wa_label_fa', 'چت در واتساپ') ?: 'چت در واتساپ')
+    : (setting('wa_label_en', 'Chat on WhatsApp') ?: 'Chat on WhatsApp');
+$floatWaSub = $isFa ? 'آنلاین · پاسخ سریع' : 'Online · Fast Reply';
+
+$waClasses = [
+    'wa-float',
+    'wa-style-' . $waStyle,
+    'wa-color-' . $waColor,
+    'wa-pos-' . $waPos,
+];
+if ($waPulse) {
+    $waClasses[] = 'wa-has-pulse';
+}
 ?>
 </main>
 <footer class="site-footer">
@@ -89,5 +117,25 @@ $whatsappText = preg_replace('/[^0-9]/', '', $whatsapp);
         <span>&copy; <?= e($year) ?> <?= e($brand) ?><?= $tagline !== '' ? ' — ' . e($tagline) : '' ?></span>
     </div>
 </footer>
+
+<?php if ($waEnabled): ?>
+<a href="https://wa.me/<?= e($floatWaNumber) ?>?text=<?= $floatWaMsg ?>"
+   class="<?= e(implode(' ', $waClasses)) ?>"
+   target="_blank"
+   rel="noopener"
+   aria-label="<?= e($floatWaLabel) ?>"
+   title="<?= e($floatWaLabel) ?>">
+    <span class="wa-float-icon">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true">
+            <path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1 1 12 20zm4.4-6c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.5s-.5-1.3-.7-1.8-.4-.4-.5-.4h-.5a1 1 0 0 0-.7.3A3 3 0 0 0 6.3 9c0 1.8 1.3 3.5 1.5 3.7s2.5 3.9 6.1 5.2c2.2.8 2.6.6 3.1.6s1.4-.6 1.6-1.1.2-1 .1-1.1-.3-.2-.5-.3z"/>
+        </svg>
+        <span class="wa-float-online-dot"></span>
+    </span>
+    <span class="wa-float-copy">
+        <small class="wa-float-sub"><?= e($floatWaSub) ?></small>
+        <span class="wa-float-text"><?= e($floatWaLabel) ?></span>
+    </span>
+</a>
+<?php endif; ?>
 </body>
 </html>

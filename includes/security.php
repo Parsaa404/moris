@@ -6,13 +6,21 @@
 declare(strict_types=1);
 
 /**
+ * Check whether the current request is over HTTPS (direct or behind a reverse proxy).
+ */
+function is_https(): bool
+{
+    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || ((int) ($_SERVER['SERVER_PORT'] ?? 0) === 443)
+        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+}
+
+/**
  * Apply secure session cookie parameters before session_start().
  */
 function secure_session_cookie_params(): void
 {
-    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-        || ((int) ($_SERVER['SERVER_PORT'] ?? 0) === 443)
-        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+    $https = is_https();
 
     session_set_cookie_params([
         'lifetime' => 0,

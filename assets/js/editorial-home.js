@@ -198,8 +198,11 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateGallery(page) {
     activeGalleryPage = page;
     galleryDots.forEach((d, i) => d.classList.toggle('is-active', i === page));
-    // Provide a subtle highlight or scale animation
     galleryCards.forEach(card => {
+      const cardPage = card.hasAttribute('data-gal-page') ? parseInt(card.getAttribute('data-gal-page'), 10) : 0;
+      if (galleryDots.length > 1 && card.hasAttribute('data-gal-page')) {
+        card.style.display = (cardPage === page) ? '' : 'none';
+      }
       card.style.transform = 'translateY(-4px)';
       setTimeout(() => { card.style.transform = ''; }, 300);
     });

@@ -523,9 +523,30 @@ require dirname(__DIR__) . '/includes/public_header.php';
                 'quote_en' => 'Lost 11kg and gained incredible core and back definition. Mori designed a structured strength regimen that worked seamlessly with my demanding schedule. Best trainer in KL.'
             ]
         ];
-        $galItems = hp_json($hp, 'gallery', 'items', $defaultGalItems);
+        $cmsGalItems = hp_json($hp, 'gallery', 'items', $defaultGalItems);
+
+        // Pull photos directly from gallery.php (gallery_items table)
+        $dbGalCats = [];
+        foreach (get_gallery_categories(true) as $gc) {
+            $dbGalCats[(int) $gc['id']] = lang_field($gc, 'name', $lang);
+        }
+        $dbGalRows = get_gallery_items(true);
+        $galItems = [];
+        foreach ($dbGalRows as $row) {
+            $catId = $row['category_id'] !== null ? (int) $row['category_id'] : 0;
+            $galItems[] = [
+                'image'    => $row['image_path'],
+                'name_en'  => lang_field($row, 'title', $lang),
+                'tag_en'   => $dbGalCats[$catId] ?? 'Gallery',
+                'quote_en' => '',
+            ];
+        }
+        if (empty($galItems)) {
+            $galItems = $cmsGalItems;
+        }
         $galBtnText = hp_field($hp, 'gallery', 'btn_text', $lang, 'View Full Gallery');
         $galBtnUrl = hp_field($hp, 'gallery', 'btn_url', $lang, 'gallery.php');
+        $totalGalPages = max(1, (int) ceil(count($galItems) / 2));
     ?>
     <!-- ======================================================================
          Section G: Gallery or Visual Showcase ("Our Gallery")
@@ -537,28 +558,32 @@ require dirname(__DIR__) . '/includes/public_header.php';
         </div>
 
         <div class="ed-gallery-cards-grid">
-            <?php foreach ($galItems as $gCard): 
+            <?php foreach ($galItems as $gIdx => $gCard): 
                 $gImg = $gCard['image'] ?? 'assets/images/gallery-sara.jpg';
                 $gName = $gCard['name_en'] ?? '';
                 $gTag = $gCard['tag_en'] ?? '';
-                $gQuote = $gCard['quote_en'] ?? '';
+                $gQuote = trim((string) ($gCard['quote_en'] ?? ''));
             ?>
-            <div class="ed-gallery-card">
+            <div class="ed-gallery-card" data-gal-page="<?= (int) floor($gIdx / 2) ?>" <?= $gIdx >= 2 ? 'style="display:none;"' : '' ?>>
                 <div class="ed-gallery-media-wrapper">
                     <img src="<?= e(url($gImg)) ?>" 
-                         alt="Client <?= e($gName) ?>" 
+                         alt="<?= e($gName !== '' ? $gName : $galTitle) ?>" 
                          class="ed-gallery-image"
                          loading="lazy">
                 </div>
+                <?php if ($gName !== '' || $gTag !== '' || $gQuote !== ''): ?>
                 <div class="ed-gallery-card-body">
                     <div class="ed-gallery-client-header">
                         <h3 class="ed-gallery-client-name"><?= e($gName) ?></h3>
                         <span class="ed-gallery-client-tag"><?= e($gTag) ?></span>
                     </div>
+                    <?php if ($gQuote !== ''): ?>
                     <p class="ed-gallery-client-quote">
                         &ldquo;<?= e($gQuote) ?>&rdquo;
                     </p>
+                    <?php endif; ?>
                 </div>
+                <?php endif; ?>
             </div>
             <?php endforeach; ?>
         </div>
@@ -566,9 +591,9 @@ require dirname(__DIR__) . '/includes/public_header.php';
         <!-- Gallery Controls -->
         <div class="ed-gallery-controls">
             <div class="ed-gallery-dots">
-                <button type="button" class="ed-gallery-dot is-active" aria-label="Page 1"></button>
-                <button type="button" class="ed-gallery-dot" aria-label="Page 2"></button>
-                <button type="button" class="ed-gallery-dot" aria-label="Page 3"></button>
+                <?php for ($pIdx = 0; $pIdx < $totalGalPages; $pIdx++): ?>
+                    <button type="button" class="ed-gallery-dot <?= $pIdx === 0 ? 'is-active' : '' ?>" aria-label="Page <?= $pIdx + 1 ?>"></button>
+                <?php endfor; ?>
             </div>
             <div class="ed-gallery-arrows">
                 <button type="button" class="ed-gallery-arrow-btn" id="ed-gallery-prev" aria-label="Previous Showcase">&#10094;</button>

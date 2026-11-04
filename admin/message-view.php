@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin — view a single contact message (marks it as read).
+ * Admin — view a single contact message or consultation booking (marks it as read).
  */
 
 declare(strict_types=1);
@@ -27,9 +27,12 @@ if ((int) $msg['is_read'] === 0) {
     $msg['is_read'] = 1;
 }
 
-$mailtoSubject = rawurlencode('Re: your enquiry — ' . SITE_NAME);
+$isConsultation = str_starts_with((string) ($msg['goal'] ?? ''), 'Free Consultation');
+$mailtoSubject = rawurlencode(($isConsultation ? 'Your Consultation Booking — ' : 'Re: your enquiry — ') . SITE_NAME);
+$waDigits = preg_replace('/[^0-9]/', '', (string) ($msg['phone'] ?? ''));
+$waGreeting = rawurlencode('Hi ' . $msg['name'] . ', this is Coach Mori regarding your enquiry on ' . SITE_NAME . '.');
 
-$pageHeading = 'Message from ' . $msg['name'];
+$pageHeading = ($isConsultation ? 'Consultation Request: ' : 'Message from ') . $msg['name'];
 require __DIR__ . '/_header.php';
 ?>
 
@@ -37,18 +40,31 @@ require __DIR__ . '/_header.php';
 
 <div class="panel message-detail">
     <dl class="msg-meta">
+        <div>
+            <dt>Type</dt>
+            <dd>
+                <?php if ($isConsultation): ?>
+                    <span class="badge badge-on">Consultation Booking</span>
+                <?php else: ?>
+                    <span class="badge badge-off">General Enquiry</span>
+                <?php endif; ?>
+            </dd>
+        </div>
         <div><dt>Name</dt><dd><?= e($msg['name']) ?></dd></div>
         <div><dt>Email</dt><dd><a href="mailto:<?= e($msg['email']) ?>?subject=<?= $mailtoSubject ?>"><?= e($msg['email']) ?></a></dd></div>
-        <div><dt>Phone</dt><dd><?= e($msg['phone'] !== '' ? $msg['phone'] : '—') ?></dd></div>
-        <div><dt>Goal</dt><dd><?= e($msg['goal'] !== '' ? $msg['goal'] : '—') ?></dd></div>
+        <div><dt>Phone / WhatsApp</dt><dd><?= e($msg['phone'] !== '' ? $msg['phone'] : '—') ?></dd></div>
+        <div><dt>Goal / Slot</dt><dd><?= e($msg['goal'] !== '' ? $msg['goal'] : '—') ?></dd></div>
         <div><dt>Received</dt><dd><?= e(date('d M Y, H:i', strtotime($msg['created_at']))) ?></dd></div>
     </dl>
 
-    <h2 class="msg-heading">Message</h2>
+    <h2 class="msg-heading">Details &amp; Message</h2>
     <div class="msg-body"><?= nl2br(e($msg['message'])) ?></div>
 
     <div class="form-actions">
-        <a class="btn btn-primary btn-inline" href="mailto:<?= e($msg['email']) ?>?subject=<?= $mailtoSubject ?>">Reply by email</a>
+        <a class="btn btn-primary btn-inline" href="mailto:<?= e($msg['email']) ?>?subject=<?= $mailtoSubject ?>">Reply by Email</a>
+        <?php if ($waDigits !== ''): ?>
+            <a class="btn btn-ghost btn-inline" href="https://wa.me/<?= e($waDigits) ?>?text=<?= $waGreeting ?>" target="_blank" rel="noopener">Reply on WhatsApp</a>
+        <?php endif; ?>
         <form method="post" action="<?= e(url('admin/messages.php')) ?>" class="inline-form">
             <?= csrf_field() ?>
             <input type="hidden" name="action" value="unread">

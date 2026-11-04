@@ -510,9 +510,43 @@ require dirname(__DIR__) . '/includes/public_header.php';
                 'quote_fa' => '۱۱ کیلوگرم وزن کم کردم و عضلات شکم و پشتم تفکیک فوق‌العاده‌ای پیدا کرد. موری یک برنامه قدرتی منظم تنظیم کرد که کاملاً با مشغله کاری من هماهنگ بود. بهترین مربی در کوالالامپور.'
             ]
         ];
-        $galItems = hp_json($hp, 'gallery', 'items', $defaultGalItems);
+        $cmsGalItems = hp_json($hp, 'gallery', 'items', $defaultGalItems);
+
+        // Pull active photos from gallery.php (gallery_items table) into this section
+        $dbGalItems = get_gallery_items(true);
+        $dbGalCats = [];
+        foreach (get_gallery_categories(true) as $gc) {
+            $dbGalCats[(int) $gc['id']] = lang_field($gc, 'name', $lang);
+        }
+
+        $galItems = [];
+        if (!empty($dbGalItems)) {
+            foreach ($dbGalItems as $idx => $gRow) {
+                $catLabel = ($gRow['category_id'] !== null && isset($dbGalCats[(int) $gRow['category_id']]))
+                    ? $dbGalCats[(int) $gRow['category_id']]
+                    : 'گالری و نتایج شاگردان';
+                $rowTitle = trim(lang_field($gRow, 'title', $lang));
+                $cmsFallback = $cmsGalItems[$idx] ?? [];
+                $galItems[] = [
+                    'image'    => $gRow['image_path'],
+                    'name_fa'  => $rowTitle !== '' ? $rowTitle : ($cmsFallback['name_fa'] ?? $cmsFallback['name_en'] ?? ('تصویر شاگرد #' . ($idx + 1))),
+                    'tag_fa'   => $catLabel,
+                    'quote_fa' => $cmsFallback['quote_fa'] ?? $cmsFallback['quote_en'] ?? ''
+                ];
+            }
+            // Append remaining CMS transformation items if only 1 gallery photo exists so the 2-column showcase stays balanced
+            if (count($galItems) === 1 && count($cmsGalItems) > 1) {
+                for ($i = 1; $i < count($cmsGalItems); $i++) {
+                    $galItems[] = $cmsGalItems[$i];
+                }
+            }
+        } else {
+            $galItems = $cmsGalItems;
+        }
+
         $galBtnText = hp_field($hp, 'gallery', 'btn_text', $lang, 'مشاهده گالری کامل');
         $galBtnUrl = hp_field($hp, 'gallery', 'btn_url', $lang, 'gallery.php');
+        $galTotalPages = max(1, (int) ceil(count($galItems) / 2));
     ?>
     <!-- ======================================================================
          Section G: Gallery or Visual Showcase ("Our Gallery")
@@ -524,27 +558,34 @@ require dirname(__DIR__) . '/includes/public_header.php';
         </div>
 
         <div class="ed-gallery-cards-grid">
-            <?php foreach ($galItems as $gCard): 
+            <?php foreach ($galItems as $gIdx => $gCard): 
                 $gImg = $gCard['image'] ?? 'assets/images/gallery-sara.jpg';
                 $gName = $gCard['name_fa'] ?? $gCard['name_en'] ?? '';
                 $gTag = $gCard['tag_fa'] ?? $gCard['tag_en'] ?? '';
                 $gQuote = $gCard['quote_fa'] ?? $gCard['quote_en'] ?? '';
+                $gPage = (int) floor($gIdx / 2);
             ?>
-            <div class="ed-gallery-card">
+            <div class="ed-gallery-card" data-gal-page="<?= $gPage ?>"<?= $gPage > 0 ? ' style="display:none;"' : '' ?>>
                 <div class="ed-gallery-media-wrapper">
-                    <img src="<?= e(url($gImg)) ?>" 
-                         alt="شاگرد <?= e($gName) ?>" 
-                         class="ed-gallery-image"
-                         loading="lazy">
+                    <a href="<?= e(resolve_hp_url($galBtnUrl, $lang)) ?>" style="display:block;color:inherit;text-decoration:none;">
+                        <img src="<?= e(url($gImg)) ?>" 
+                             alt="شاگرد <?= e($gName) ?>" 
+                             class="ed-gallery-image"
+                             loading="lazy">
+                    </a>
                 </div>
                 <div class="ed-gallery-card-body">
                     <div class="ed-gallery-client-header">
                         <h3 class="ed-gallery-client-name"><?= e($gName) ?></h3>
-                        <span class="ed-gallery-client-tag"><?= e($gTag) ?></span>
+                        <?php if ($gTag !== ''): ?>
+                            <span class="ed-gallery-client-tag"><?= e($gTag) ?></span>
+                        <?php endif; ?>
                     </div>
+                    <?php if ($gQuote !== ''): ?>
                     <p class="ed-gallery-client-quote">
                         &laquo;<?= e($gQuote) ?>&raquo;
                     </p>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -553,9 +594,9 @@ require dirname(__DIR__) . '/includes/public_header.php';
         <!-- Gallery Controls -->
         <div class="ed-gallery-controls">
             <div class="ed-gallery-dots">
-                <button type="button" class="ed-gallery-dot is-active" aria-label="صفحه ۱"></button>
-                <button type="button" class="ed-gallery-dot" aria-label="صفحه ۲"></button>
-                <button type="button" class="ed-gallery-dot" aria-label="صفحه ۳"></button>
+                <?php for ($p = 0; $p < $galTotalPages; $p++): ?>
+                    <button type="button" class="ed-gallery-dot<?= $p === 0 ? ' is-active' : '' ?>" data-gal-target="<?= $p ?>" aria-label="صفحه <?= $p + 1 ?>"></button>
+                <?php endfor; ?>
             </div>
             <div class="ed-gallery-arrows">
                 <button type="button" class="ed-gallery-arrow-btn" id="ed-gallery-prev" aria-label="قبلی">&#10095;</button>

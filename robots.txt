@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /includes/
+Disallow: /sql/
+Disallow: /deploy/
+
+Sitemap: https://morispt.com/sitemap.xml
+

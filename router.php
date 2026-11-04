@@ -16,6 +16,11 @@ if ($uri === false || $uri === '') {
 $root = __DIR__;
 $fsPath = $root . $uri;
 
+if ($uri === '/sitemap.xml') {
+    require $root . '/sitemap.php';
+    return true;
+}
+
 // Block direct access to internal directories & non-web files in local dev server
 if (preg_match('#^/(includes|sql|vendor|deploy|scratch|postman|\.git|\.postman)(/|$)#i', $uri)
     || preg_match('#\.(md|sql|env|sh|bat|command)$#i', $uri)) {
@@ -39,6 +44,11 @@ if ($uri !== '/' && is_file($fsPath)) {
 
 if ($uri === '/' && is_file($root . '/index.php')) {
     require $root . '/index.php';
+    return true;
+}
+
+if (is_file($root . '/404.php')) {
+    require $root . '/404.php';
     return true;
 }
 
